@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import {
   Calculator,
   Leaf,
@@ -27,12 +28,51 @@ interface CarbonEntry {
   date: string;
 }
 
+// Helper to format date
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toISOString().split('T')[0];
+};
+
 const CarbonCalculator: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("transport");
   const [amount, setAmount] = useState("");
   const [unit, setUnit] = useState("");
   const [entries, setEntries] = useState<CarbonEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      if (!user) return;
+      try {
+        const response = await fetch('http://localhost:5000/api/carbon', {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          // Map backend data to frontend interface if needed, or ensure they match
+          // Backend: _id, user, category, activityName, amount, unit, carbonFootprint, date
+          // Frontend: id, category, activity (mapped to activityName), amount, unit, carbonFootprint, date
+          const mappedData = data.map((item: any) => ({
+            id: item._id,
+            category: item.category,
+            activity: item.activityName,
+            amount: item.amount,
+            unit: item.unit,
+            carbonFootprint: item.carbonFootprint,
+            date: formatDate(item.date),
+          }));
+          setEntries(mappedData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch entries', error);
+      }
+    };
+
+    fetchEntries();
+  }, [user]);
 
   const categories = [
     {
@@ -93,7 +133,7 @@ const CarbonCalculator: React.FC = () => {
     return Math.round(amount * factor * 100) / 100;
   };
 
-  const handleAddEntry = () => {
+  const handleAddEntry = async () => {
     if (!amount || !unit) return;
 
     const activity = currentCategory?.activities.find((a) => a.unit === unit);
@@ -104,24 +144,65 @@ const CarbonCalculator: React.FC = () => {
       activity.factor
     );
 
-    const newEntry: CarbonEntry = {
-      id: Date.now(),
-      category: selectedCategory,
-      activity: activity.name,
-      amount: parseFloat(amount),
-      unit: unit,
-      carbonFootprint: carbonFootprint,
-      date: new Date().toISOString().split("T")[0],
-    };
+    if (!user) {
+      alert("Please sign in to save your activity");
+      return;
+    }
 
-    setEntries((prev) => [...prev, newEntry]);
-    setAmount("");
-    setUnit("");
-    setShowForm(false);
+    try {
+      const response = await fetch('http://localhost:5000/api/carbon', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          category: selectedCategory,
+          activityName: activity.name,
+          amount: parseFloat(amount),
+          unit: unit,
+          carbonFootprint: carbonFootprint,
+        }),
+      });
+
+      if (response.ok) {
+        const savedEntry = await response.json();
+        const newEntry: CarbonEntry = {
+          id: savedEntry._id,
+          category: savedEntry.category,
+          activity: savedEntry.activityName,
+          amount: savedEntry.amount,
+          unit: savedEntry.unit,
+          carbonFootprint: savedEntry.carbonFootprint,
+          date: formatDate(savedEntry.date),
+        };
+        setEntries((prev) => [newEntry, ...prev]);
+        setAmount("");
+        setUnit("");
+        setShowForm(false);
+      }
+    } catch (error) {
+      console.error('Failed to save entry', error);
+    }
   };
 
-  const handleDeleteEntry = (id: number) => {
-    setEntries((prev) => prev.filter((entry) => entry.id !== id));
+  const handleDeleteEntry = async (id: any) => {
+    if (!user) return;
+    
+    try {
+      const response = await fetch(`http://localhost:5000/api/carbon/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      if (response.ok) {
+        setEntries((prev) => prev.filter((entry) => entry.id !== id));
+      }
+    } catch (error) {
+      console.error('Failed to delete entry', error);
+    }
   };
 
   const totalCarbonFootprint = entries.reduce(

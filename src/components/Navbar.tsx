@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Leaf, Menu, X, Search, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Leaf, Menu, X, Search, User, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -43,10 +51,25 @@ const Navbar: React.FC = () => {
             <button className="p-2 text-gray-600 hover:text-primary-600 transition-colors duration-200">
               <Search className="h-5 w-5" />
             </button>
-            <button className="btn-primary">
-              <User className="h-4 w-4 mr-2" />
-              Sign In
-            </button>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium text-gray-700">
+                  {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-gray-600 hover:text-red-600 transition-colors duration-200"
+                  title="Sign Out"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="btn-primary">
+                <User className="h-4 w-4 mr-2" />
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -79,10 +102,25 @@ const Navbar: React.FC = () => {
                 </Link>
               ))}
               <div className="pt-4 space-y-2">
-                <button className="w-full btn-primary">
-                  <User className="h-4 w-4 mr-2" />
-                  Sign In
-                </button>
+                {user ? (
+                  <>
+                    <div className="px-3 py-2 text-base font-medium text-gray-700">
+                      Signed in as {user.name}
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center px-3 py-2 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
+                    >
+                      <LogOut className="h-5 w-5 mr-2" />
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <Link to="/login" className="w-full btn-primary flex justify-center items-center">
+                    <User className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Link>
+                )}
               </div>
             </div>
           </div>

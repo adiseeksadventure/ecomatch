@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -27,13 +27,72 @@ interface Business {
   image: string;
   phone: string;
   website: string;
-  hours: string;
+  hours?: string;
 }
 
 const BusinessDirectory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("rating");
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        let url = 'http://localhost:5000/api/vendors';
+        const params = new URLSearchParams();
+        
+        if (selectedCategory !== 'all') {
+          params.append('category', selectedCategory === 'food' ? 'Food & Dining' : 
+                                  selectedCategory === 'fashion' ? 'Fashion & Beauty' :
+                                  selectedCategory === 'home' ? 'Home & Garden' :
+                                  selectedCategory === 'services' ? 'Services & Utilities' : 'Other');
+        }
+        
+        if (searchTerm) {
+          params.append('search', searchTerm);
+        }
+
+        if (params.toString()) {
+          url += `?${params.toString()}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // Map backend data to frontend interface
+        const mappedData = data.map((item: any) => ({
+          id: item._id,
+          name: item.name,
+          category: item.category,
+          description: item.description,
+          address: item.location,
+          rating: item.rating,
+          reviews: 0, // Backend doesn't have reviews yet
+          certifications: [], // Backend doesn't have certifications yet
+          distance: "N/A", // Backend doesn't have geo-location yet
+          image: item.image,
+          phone: item.contact?.phone || "N/A",
+          website: item.contact?.website || "N/A",
+          hours: "9AM - 5PM" // Default
+        }));
+        
+        setBusinesses(mappedData);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching vendors:', error);
+        setLoading(false);
+      }
+    };
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchVendors();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, selectedCategory]);
 
   const categories = [
     {
@@ -63,125 +122,13 @@ const BusinessDirectory: React.FC = () => {
     },
   ];
 
-  const businesses: Business[] = [
-    {
-      id: 1,
-      name: "Green Grocers Market",
-      category: "food",
-      description:
-        "Organic and locally-sourced produce, dairy, and pantry items. Supporting local farmers and sustainable agriculture.",
-      address: "123 Main St, Green City",
-      rating: 4.8,
-      reviews: 127,
-      certifications: ["Organic Certified", "Local Sourcing"],
-      distance: "0.5 miles",
-      image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
-      phone: "(555) 123-4567",
-      website: "www.greengrocers.com",
-      hours: "Mon-Sat: 8AM-8PM, Sun: 9AM-6PM",
-    },
-    {
-      id: 2,
-      name: "Eco Fashion Collective",
-      category: "fashion",
-      description:
-        "Sustainable clothing and accessories made from organic materials and recycled fabrics. Ethical fashion for conscious consumers.",
-      address: "456 Oak Ave, Green City",
-      rating: 4.6,
-      reviews: 89,
-      certifications: ["Fair Trade", "Organic Materials"],
-      distance: "1.2 miles",
-      image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
-      phone: "(555) 234-5678",
-      website: "www.ecofashion.com",
-      hours: "Mon-Fri: 10AM-7PM, Sat: 11AM-6PM",
-    },
-    {
-      id: 3,
-      name: "Sustainable Home Solutions",
-      category: "home",
-      description:
-        "Eco-friendly home improvement products, energy-efficient appliances, and sustainable building materials.",
-      address: "789 Pine St, Green City",
-      rating: 4.7,
-      reviews: 156,
-      certifications: ["Energy Star", "Green Building"],
-      distance: "2.1 miles",
-      image:
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400",
-      phone: "(555) 345-6789",
-      website: "www.sustainablehome.com",
-      hours: "Mon-Sat: 9AM-6PM",
-    },
-    {
-      id: 4,
-      name: "Community Solar Co-op",
-      category: "services",
-      description:
-        "Community-owned solar energy solutions. Join our cooperative to access clean, affordable renewable energy.",
-      address: "321 Elm St, Green City",
-      rating: 4.9,
-      reviews: 203,
-      certifications: ["Solar Certified", "Community Owned"],
-      distance: "3.5 miles",
-      image:
-        "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400",
-      phone: "(555) 456-7890",
-      website: "www.communitysolar.com",
-      hours: "Mon-Fri: 8AM-5PM",
-    },
-    {
-      id: 5,
-      name: "Local Artisan Bakery",
-      category: "food",
-      description:
-        "Handcrafted breads and pastries using organic ingredients and traditional baking methods. Zero waste packaging.",
-      address: "654 Maple Dr, Green City",
-      rating: 4.5,
-      reviews: 94,
-      certifications: ["Organic Certified", "Zero Waste"],
-      distance: "0.8 miles",
-      image:
-        "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400",
-      phone: "(555) 567-8901",
-      website: "www.localartisanbakery.com",
-      hours: "Tue-Sun: 7AM-3PM",
-    },
-    {
-      id: 6,
-      name: "Natural Wellness Center",
-      category: "services",
-      description:
-        "Holistic health services, organic supplements, and wellness consultations. Supporting mind-body wellness.",
-      address: "987 Cedar Ln, Green City",
-      rating: 4.8,
-      reviews: 178,
-      certifications: ["Natural Products", "Wellness Certified"],
-      distance: "1.8 miles",
-      image:
-        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-      phone: "(555) 678-9012",
-      website: "www.naturalwellness.com",
-      hours: "Mon-Sat: 9AM-7PM",
-    },
-  ];
+  // Removed hardcoded businesses
 
-  const filteredBusinesses = businesses.filter((business) => {
-    const matchesSearch =
-      business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      business.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || business.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const sortedBusinesses = [...filteredBusinesses].sort((a, b) => {
+  // Filtering is now done on backend, client-side sorting only
+  const sortedBusinesses = [...businesses].sort((a, b) => {
     switch (sortBy) {
       case "rating":
         return b.rating - a.rating;
-      case "distance":
-        return parseFloat(a.distance) - parseFloat(b.distance);
       case "reviews":
         return b.reviews - a.reviews;
       default:
@@ -257,7 +204,7 @@ const BusinessDirectory: React.FC = () => {
                 className="input-field"
               >
                 <option value="rating">Sort by Rating</option>
-                <option value="distance">Sort by Distance</option>
+                {/* <option value="distance">Sort by Distance</option> */ }
                 <option value="reviews">Sort by Reviews</option>
               </select>
             </div>
@@ -273,6 +220,9 @@ const BusinessDirectory: React.FC = () => {
         </div>
 
         {/* Business Grid */}
+        {loading ? (
+           <div className="text-center py-12">Loading...</div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {sortedBusinesses.map((business) => (
             <div
@@ -355,6 +305,7 @@ const BusinessDirectory: React.FC = () => {
             </div>
           ))}
         </div>
+        )}
 
         {/* No Results */}
         {sortedBusinesses.length === 0 && (
