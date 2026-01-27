@@ -9,13 +9,14 @@ import CommunityDashboard from "./pages/CommunityDashboard";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ResumeAnalyzer from "./pages/ResumeAnalyzer";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-nature-bg font-sans text-nature-primary">
         <Navbar />
         <main className="flex-1">
           <Routes>
@@ -26,6 +27,7 @@ function App() {
             <Route path="/dashboard" element={<CommunityDashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/resulyze" element={<ResumeAnalyzer />} />
           </Routes>
         </main>
         <Footer />

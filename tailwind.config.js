@@ -5,16 +5,30 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: "#f0fdf4",
-          100: "#dcfce7",
-          200: "#bbf7d0",
-          300: "#86efac",
-          400: "#4ade80",
-          500: "#22c55e",
-          600: "#16a34a",
-          700: "#15803d",
-          800: "#166534",
-          900: "#14532d",
+          50: "#fdf2f3",
+          100: "#fce7e9",
+          200: "#f8ced2",
+          300: "#f2a6ad",
+          400: "#ea7580",
+          500: "#e04856",
+          600: "#cb2a39",
+          700: "#aa1f2d",
+          800: "#8e1d29",
+          900: "#761e27",
+        },
+        brand: {
+          start: "#e83543", // Vivid Red/Pink
+          end: "#9b23a1",   // Vivid Purple
+          dark: "#0f0f0f",  // Card Black
+          input: "#1a1a1a", // Input Dark
+        },
+        nature: {
+          heading: "#052F1E",
+          primary: "#436850",
+          sage: "#ADBC9F",
+          accent: "#D2E3C8",
+          bg: "#FAFAFA",
+          card: "rgba(255, 255, 255, 0.8)",
         },
         secondary: {
           50: "#f8fafc",

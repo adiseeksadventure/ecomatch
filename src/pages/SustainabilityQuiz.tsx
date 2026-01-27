@@ -284,51 +284,54 @@ const SustainabilityQuiz: React.FC = () => {
 
   if (showResults && results) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
+      <div className="min-h-screen bg-nature-bg py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <div className="bg-primary-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <CheckCircle className="h-8 w-8 text-primary-600" />
+          <div className="text-center mb-12">
+            <div className="bg-nature-accent p-4 rounded-3xl w-20 h-20 mx-auto mb-6 flex items-center justify-center shadow-lg shadow-nature-sage/20 border-4 border-white">
+              <CheckCircle className="h-10 w-10 text-nature-heading" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Your Sustainability Profile
+            <h1 className="text-4xl md:text-6xl font-black text-nature-heading mb-4 tracking-tight">
+              Your Eco Profile
             </h1>
-            <p className="text-xl text-gray-600">
-              Based on your answers, here's your personalized sustainability
-              match
+            <p className="text-xl text-nature-primary font-medium opacity-80">
+              Based on your answers, here's your personalized sustainability match
             </p>
           </div>
 
-          <div className="card mb-8">
-            <h2 className="text-2xl font-bold text-primary-600 mb-4">
+          <div className="card shadow-2xl shadow-nature-sage/10 rounded-[2.5rem] mb-12 p-10 md:p-16 border-nature-sage/20">
+            <h2 className="text-4xl md:text-5xl font-black text-nature-heading mb-6 tracking-tight">
               {results.category}
             </h2>
-            <p className="text-gray-700 mb-6">{results.description}</p>
+            <p className="text-nature-primary mb-12 leading-relaxed text-xl font-medium opacity-80">{results.description}</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-xl font-bold text-nature-heading mb-6 flex items-center gap-2">
                   Recommendations
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-4">
                   {results.recommendations.map((rec, index) => (
-                    <li key={index} className="flex items-start space-x-2">
-                      <CheckCircle className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">{rec}</span>
+                    <li key={index} className="flex items-start space-x-4 p-4 rounded-2xl bg-white border border-nature-sage/10 shadow-sm">
+                      <div className="mt-1 bg-nature-accent/30 p-1 rounded-md">
+                        <CheckCircle className="h-4 w-4 text-nature-primary" />
+                      </div>
+                      <span className="text-nature-primary font-semibold">{rec}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Recommended Businesses
+                <h3 className="text-xl font-bold text-nature-heading mb-6 flex items-center gap-2">
+                  Top Matches
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-4">
                   {results.businesses.map((business, index) => (
-                    <li key={index} className="flex items-start space-x-2">
-                      <Leaf className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">{business}</span>
+                    <li key={index} className="flex items-start space-x-4 p-4 rounded-2xl bg-nature-accent/10 border border-nature-accent/20">
+                      <div className="mt-1 bg-nature-accent p-1 rounded-md">
+                        <Leaf className="h-4 w-4 text-nature-heading" />
+                      </div>
+                      <span className="text-nature-heading font-black">{business}</span>
                     </li>
                   ))}
                 </ul>
@@ -336,14 +339,14 @@ const SustainabilityQuiz: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/directory" className="btn-primary text-lg px-8 py-3">
-              Browse Recommended Businesses
-              <ArrowRight className="ml-2 h-5 w-5" />
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link to="/directory" className="btn-primary text-xl px-12 py-5 shadow-xl shadow-nature-sage/30">
+              Explore Businesses
+              <ArrowRight className="ml-2 h-6 w-6 inline" />
             </Link>
             <button
               onClick={handleRestart}
-              className="btn-secondary text-lg px-8 py-3"
+              className="px-12 py-5 rounded-full border-2 border-nature-primary/20 text-nature-primary font-black hover:bg-nature-sage/5 transition-all duration-300"
             >
               Take Quiz Again
             </button>
@@ -357,92 +360,100 @@ const SustainabilityQuiz: React.FC = () => {
   const hasAnswered = answers[currentQ.id];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <div className="min-h-screen bg-nature-bg py-20 flex items-center justify-center">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-black text-nature-heading mb-6 tracking-tight">
             Sustainability Quiz
           </h1>
-          <p className="text-xl text-gray-600 mb-6">
-            Answer a few questions to discover businesses that match your values
+          <p className="text-xl text-nature-primary font-medium opacity-70 mb-12">
+            Let's find the best eco-conscious matches for your lifestyle
           </p>
 
           {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+          <div className="max-w-md mx-auto w-full bg-white rounded-full h-4 mb-4 border border-nature-sage/20 p-1">
             <div
-              className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+              className="bg-nature-primary h-full rounded-full transition-all duration-700 ease-out shadow-lg shadow-nature-primary/20"
               style={{
                 width: `${((currentQuestion + 1) / questions.length) * 100}%`,
               }}
             ></div>
           </div>
 
-          <p className="text-gray-600">
-            Question {currentQuestion + 1} of {questions.length}
+          <p className="text-nature-sage font-black tracking-widest text-xs uppercase">
+            Progress: {currentQuestion + 1} / {questions.length}
           </p>
         </div>
 
-        <div className="card">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+        <div className="card shadow-2xl shadow-nature-sage/10 rounded-[3rem] p-8 md:p-14 border-nature-sage/20 relative overflow-hidden bg-white/40 backdrop-blur-2xl">
+           {/* Decorative background accent */}
+           <div className="absolute -top-10 -right-10 w-48 h-48 bg-nature-accent/20 rounded-full blur-3xl pointer-events-none" />
+           <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-nature-sage/20 rounded-full blur-3xl pointer-events-none" />
+
+          <h2 className="text-3xl md:text-4xl font-black text-nature-heading mb-12 text-center relative z-10 leading-tight">
             {currentQ.question}
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10 font-sans">
             {currentQ.options.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleAnswer(currentQ.id, option.value)}
-                className={`p-6 rounded-lg border-2 transition-all duration-200 text-left ${
+                className={`p-8 rounded-[2rem] border-2 transition-all duration-300 text-left group ${
                   answers[currentQ.id] === option.value
-                    ? "border-primary-600 bg-primary-50 text-primary-700"
-                    : "border-gray-200 hover:border-primary-300 hover:bg-gray-50"
+                    ? "border-nature-primary bg-white shadow-xl shadow-nature-sage/20 scale-[1.02]"
+                    : "border-nature-sage/10 bg-white/50 hover:bg-white hover:border-nature-sage/30"
                 }`}
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-6">
                   <div
-                    className={`p-2 rounded-lg ${
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                       answers[currentQ.id] === option.value
-                        ? "bg-primary-600 text-white"
-                        : "bg-gray-100 text-gray-600"
+                        ? "bg-nature-primary text-white scale-110 rotate-3"
+                        : "bg-nature-accent/30 text-nature-primary group-hover:scale-110"
                     }`}
                   >
                     {option.icon}
                   </div>
-                  <span className="font-medium">{option.label}</span>
+                  <span className={`text-xl font-bold tracking-tight ${
+                      answers[currentQ.id] === option.value ? "text-nature-heading" : "text-nature-primary opacity-80"
+                  }`}>
+                      {option.label}
+                  </span>
                 </div>
               </button>
             ))}
           </div>
 
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between items-center mt-16 relative z-10 font-sans">
             <button
               onClick={handlePrevious}
               disabled={currentQuestion === 0}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
+              className={`flex items-center space-x-3 text-lg font-black transition-all duration-300 py-4 px-8 rounded-full ${
                 currentQuestion === 0
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-gray-600 hover:text-primary-600"
+                  ? "opacity-0 pointer-events-none"
+                  : "text-nature-sage hover:text-nature-heading hover:bg-nature-sage/10"
               }`}
             >
-              <ArrowLeft className="h-5 w-5" />
-              <span>Previous</span>
+              <ArrowLeft className="h-6 w-6" />
+              <span>Back</span>
             </button>
 
             <button
               onClick={handleNext}
               disabled={!hasAnswered}
-              className={`flex items-center space-x-2 px-6 py-2 rounded-lg transition-colors duration-200 ${
+              className={`flex items-center space-x-3 px-10 py-5 rounded-full transition-all duration-500 font-black shadow-xl ${
                 hasAnswered
-                  ? "btn-primary"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? "btn-primary active:scale-95"
+                  : "bg-gray-100 text-gray-300 cursor-not-allowed grayscale"
               }`}
             >
-              <span>
+              <span className="text-lg">
                 {currentQuestion === questions.length - 1
-                  ? "See Results"
-                  : "Next"}
+                  ? "Discover Impact"
+                  : "Continue"}
               </span>
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-6 w-6" />
             </button>
           </div>
         </div>

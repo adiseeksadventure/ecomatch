@@ -221,52 +221,55 @@ const CarbonCalculator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-nature-bg py-20 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="bg-primary-100 p-3 rounded-full">
-              <Calculator className="h-8 w-8 text-primary-600" />
+        <div className="text-center mb-16">
+          <div className="flex justify-center mb-8">
+            <div className="p-5 rounded-[2rem] bg-nature-accent shadow-xl shadow-nature-sage/10 border-4 border-white">
+              <Calculator className="h-10 w-10 text-nature-heading" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Carbon Footprint Calculator
+          <h1 className="text-4xl md:text-6xl font-black text-nature-heading mb-6 tracking-tight">
+            Impact Calculator
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Track your daily activities and calculate their environmental
-            impact. Make informed decisions to reduce your carbon footprint.
+          <p className="text-xl text-nature-primary max-w-2xl mx-auto font-medium opacity-80">
+            Measure your daily choices and discover their environmental 
+            footprint. Small adjustments lead to systemic change.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Calculator Form */}
           <div className="lg:col-span-1">
-            <div className="card">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="card shadow-2xl shadow-nature-sage/10 rounded-[2.5rem] p-10 border-nature-sage/20 sticky top-24">
+              <h2 className="text-2xl font-black text-nature-heading mb-8 flex items-center gap-3">
+                <Target className="h-6 w-6 text-nature-primary" />
                 Add Activity
               </h2>
 
-              <div className="space-y-4">
+              <div className="space-y-8">
                 {/* Category Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-black text-nature-sage uppercase tracking-[0.2em] mb-4">
                     Category
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-3">
                     {categories.map((category) => (
                       <button
                         key={category.value}
                         onClick={() => setSelectedCategory(category.value)}
-                        className={`p-3 rounded-lg border-2 transition-all duration-200 text-left ${
+                        className={`p-4 rounded-xl border-2 transition-all duration-300 text-left relative group ${
                           selectedCategory === category.value
-                            ? "border-primary-600 bg-primary-50 text-primary-700"
-                            : "border-gray-200 hover:border-primary-300"
+                            ? "border-nature-primary bg-white shadow-lg"
+                            : "border-nature-sage/10 bg-nature-accent/20 hover:border-nature-primary/30"
                         }`}
                       >
-                        <div className="flex items-center space-x-2">
-                          {category.icon}
-                          <span className="text-sm font-medium">
+                        <div className="flex flex-col items-center gap-2">
+                           <div className={`transition-colors ${selectedCategory === category.value ? "text-nature-primary" : "text-nature-sage"}`}>
+                              {category.icon}
+                           </div>
+                          <span className={`text-[10px] font-black uppercase tracking-widest ${selectedCategory === category.value ? "text-nature-heading" : "text-nature-primary opacity-60"}`}>
                             {category.label}
                           </span>
                         </div>
@@ -277,34 +280,39 @@ const CarbonCalculator: React.FC = () => {
 
                 {/* Activity Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Activity
+                  <label className="block text-xs font-black text-nature-sage uppercase tracking-[0.2em] mb-4">
+                    Specific Activity
                   </label>
-                  <select
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    className="input-field"
-                  >
-                    <option value="">Select an activity</option>
-                    {currentCategory?.activities.map((activity, index) => (
-                      <option key={index} value={activity.unit}>
-                        {activity.name} ({activity.unit})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                        value={unit}
+                        onChange={(e) => setUnit(e.target.value)}
+                        className="input-field pl-5 pr-12 appearance-none"
+                    >
+                        <option value="" className="bg-white">Select activity...</option>
+                        {currentCategory?.activities.map((activity, index) => (
+                        <option key={index} value={activity.unit} className="bg-white">
+                            {activity.name}
+                        </option>
+                        ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                        <svg className="w-4 h-4 text-nature-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Amount Input */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount
+                  <label className="block text-xs font-black text-nature-sage uppercase tracking-[0.2em] mb-4">
+                    Quantity ({unit || "..."})
                   </label>
                   <input
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    placeholder="Enter amount"
-                    className="input-field"
+                    placeholder="0.00"
+                    className="input-field pl-5"
                   />
                 </div>
 
@@ -312,98 +320,109 @@ const CarbonCalculator: React.FC = () => {
                 <button
                   onClick={handleAddEntry}
                   disabled={!amount || !unit}
-                  className={`w-full py-2 px-4 rounded-lg transition-colors duration-200 ${
+                  className={`w-full py-5 px-6 rounded-full font-black text-xs uppercase tracking-widest transition-all duration-500 shadow-xl ${
                     amount && unit
-                      ? "btn-primary"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      ? "btn-primary hover:scale-[1.02]"
+                      : "bg-gray-100 text-gray-300 cursor-not-allowed border border-gray-200 grayscale"
                   }`}
                 >
-                  Add to Calculator
+                  Log Impact
                 </button>
               </div>
             </div>
           </div>
 
           {/* Results and History */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-12">
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="card text-center">
-                <div className="flex justify-center mb-2">
-                  <TrendingUp className="h-8 w-8 text-primary-600" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-[2rem] p-8 border border-nature-sage/10 text-center relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+                <div className="flex justify-center mb-6">
+                  <div className="p-4 bg-nature-accent/50 rounded-2xl group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                     <BarChart3 className="h-8 w-8 text-nature-heading" />
+                  </div>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-4xl font-black text-nature-heading mb-2">
                   {totalCarbonFootprint.toFixed(1)}
                 </div>
-                <div className="text-sm text-gray-600">Total CO2 (lbs)</div>
+                <div className="text-[10px] text-nature-sage uppercase font-black tracking-[0.2em]">Total CO2 (lbs)</div>
               </div>
 
-              <div className="card text-center">
-                <div className="flex justify-center mb-2">
-                  <BarChart3 className="h-8 w-8 text-primary-600" />
+              <div className="bg-white rounded-[2rem] p-8 border border-nature-sage/10 text-center relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+                <div className="flex justify-center mb-6">
+                   <div className="p-4 bg-[#F1F5EF] rounded-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
+                      <Zap className="h-8 w-8 text-nature-primary" />
+                   </div>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-4xl font-black text-nature-heading mb-2">
                   {averagePerDay.toFixed(1)}
                 </div>
-                <div className="text-sm text-gray-600">Avg per Day (lbs)</div>
+                <div className="text-[10px] text-nature-sage uppercase font-black tracking-[0.2em]">Daily Avg (lbs)</div>
               </div>
 
-              <div className="card text-center">
-                <div className="flex justify-center mb-2">
-                  <Trees className="h-8 w-8 text-primary-600" />
+              <div className="bg-nature-heading rounded-[2rem] p-8 text-center relative overflow-hidden group hover:shadow-2xl hover:shadow-nature-primary/20 transition-all duration-500">
+                <div className="absolute inset-0 bg-nature-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="flex justify-center mb-6 relative z-10">
+                   <div className="p-4 bg-white/20 rounded-2xl group-hover:scale-110 transition-transform duration-500">
+                      <Trees className="h-8 w-8 text-nature-accent" />
+                   </div>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-4xl font-black text-white mb-2 relative z-10">
                   {treesNeeded}
                 </div>
-                <div className="text-sm text-gray-600">Trees to Offset</div>
+                <div className="text-[10px] text-nature-sage font-black uppercase tracking-[0.2em] relative z-10">Trees Needed</div>
               </div>
             </div>
 
             {/* Activity History */}
-            <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Activity History
+            <div className="card shadow-2xl shadow-nature-sage/10 rounded-[2.5rem] p-10 border-nature-sage/20">
+              <h3 className="text-2xl font-black text-nature-heading mb-10 flex items-center gap-3">
+                <BarChart3 className="h-6 w-6 text-nature-primary" />
+                Impact History
               </h3>
 
               {entries.length === 0 ? (
-                <div className="text-center py-8">
-                  <Calculator className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">
-                    No activities added yet. Start by adding your first activity
-                    above.
+                <div className="text-center py-20 bg-nature-accent/20 rounded-[2rem] border-2 border-dashed border-nature-sage/10">
+                  <div className="bg-white p-6 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center shadow-lg">
+                      <Calculator className="h-10 w-10 text-nature-sage opacity-40" />
+                  </div>
+                  <p className="text-nature-primary font-bold opacity-60">
+                    Your journey hasn't started yet. <br />
+                    Add your first activity to see your impact.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-6">
                   {entries.map((entry) => (
                     <div
                       key={entry.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-between p-6 bg-white rounded-[2rem] border border-nature-sage/5 hover:border-nature-primary/20 hover:shadow-lg transition-all duration-300 group"
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-primary-600">
+                      <div className="flex items-center space-x-6">
+                        <div className="w-14 h-14 rounded-2xl bg-nature-accent/30 flex items-center justify-center text-nature-heading group-hover:scale-110 transition-transform">
                           {getCategoryIcon(entry.category)}
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900">
+                          <div className="font-black text-nature-heading text-lg">
                             {entry.activity}
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-xs text-nature-primary font-bold opacity-60 uppercase tracking-widest mt-1">
                             {entry.amount} {entry.unit} • {entry.date}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-8">
                         <div className="text-right">
-                          <div className="font-semibold text-gray-900">
-                            {entry.carbonFootprint} lbs CO2
+                          <div className="font-black text-nature-primary text-xl">
+                            {entry.carbonFootprint} <span className="text-[10px] uppercase tracking-tighter opacity-60">lbs CO2</span>
                           </div>
                         </div>
                         <button
                           onClick={() => handleDeleteEntry(entry.id)}
-                          className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                          className="w-10 h-10 flex items-center justify-center text-nature-sage hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-300"
+                          title="Delete Entry"
                         >
-                          <TrendingDown className="h-4 w-4" />
+                          <TrendingDown className="h-6 w-6" />
                         </button>
                       </div>
                     </div>
@@ -413,51 +432,28 @@ const CarbonCalculator: React.FC = () => {
             </div>
 
             {/* Tips Section */}
-            <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Tips to Reduce Your Footprint
+            <div className="bg-white rounded-[3rem] p-12 border border-nature-sage/10 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-80 h-80 bg-nature-accent/5 rounded-full blur-[100px] pointer-events-none -mr-40 -mt-40" />
+              <h3 className="text-2xl font-black text-nature-heading mb-10 relative z-10 flex items-center gap-3">
+                <Target className="h-6 w-6 text-nature-primary" />
+                Paths to Reduction
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-start space-x-2">
-                    <Target className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      Use public transportation or carpool
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                {[
+                  "Use public transit or carpool to slice transit emissions",
+                  "Switch to LED lighting for instant energy savings",
+                  "Embrace plant-forward meals to lower food footprint",
+                  "Savor local, seasonal produce to end long-haul shipping",
+                  "Curate your lifestyle with durable, timeless goods",
+                  "Vote with your wallet for verified green partners"
+                ].map((tip, i) => (
+                  <div key={i} className="flex items-start space-x-4">
+                    <div className="mt-1 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-nature-primary" />
+                    <span className="text-nature-primary font-medium opacity-80 leading-relaxed text-sm">
+                      {tip}
                     </span>
                   </div>
-                  <div className="flex items-start space-x-2">
-                    <Target className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      Switch to energy-efficient appliances
-                    </span>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <Target className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      Choose plant-based meals more often
-                    </span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-start space-x-2">
-                    <Target className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      Buy local and seasonal produce
-                    </span>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <Target className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      Reduce, reuse, and recycle
-                    </span>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <Target className="h-5 w-5 text-primary-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">
-                      Support sustainable businesses
-                    </span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>

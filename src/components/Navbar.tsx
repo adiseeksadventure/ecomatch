@@ -22,24 +22,26 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-nature-sage/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <Leaf className="h-8 w-8 text-primary-600" />
-              <span className="text-xl font-bold text-gray-900">EcoMatch</span>
+            <Link to="/" className="flex items-center space-x-2 group">
+              <div className="p-1.5 bg-nature-accent rounded-lg group-hover:bg-nature-sage transition-colors duration-300">
+                <Leaf className="h-6 w-6 text-nature-heading" />
+              </div>
+              <span className="text-xl font-bold text-nature-heading tracking-tight">EcoMatch</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-1">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                className="text-nature-primary hover:text-nature-heading hover:bg-nature-sage/10 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200"
               >
                 {item.name}
               </Link>
@@ -47,25 +49,25 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="p-2 text-gray-600 hover:text-primary-600 transition-colors duration-200">
+          <div className="hidden md:flex items-center space-x-2">
+            <button className="p-2 text-nature-primary hover:text-nature-heading transition-colors duration-200">
               <Search className="h-5 w-5" />
             </button>
             {user ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-bold text-nature-heading">
                   {user.name}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="p-2 text-gray-600 hover:text-red-600 transition-colors duration-200"
+                  className="p-2 text-nature-primary hover:text-red-600 transition-colors duration-200"
                   title="Sign Out"
                 >
                   <LogOut className="h-5 w-5" />
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="btn-primary">
+              <Link to="/login" className="btn-primary flex items-center ml-4">
                 <User className="h-4 w-4 mr-2" />
                 Sign In
               </Link>
@@ -76,7 +78,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-600 hover:text-primary-600 transition-colors duration-200"
+              className="p-2 text-nature-heading hover:bg-nature-sage/10 rounded-lg transition-colors duration-200"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -90,33 +92,33 @@ const Navbar: React.FC = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">
+            <div className="px-2 pt-2 pb-6 space-y-1 sm:px-3 border-t border-nature-sage/10 bg-white">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className="text-gray-600 hover:text-primary-600 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                  className="text-nature-primary hover:text-nature-heading hover:bg-nature-sage/10 block px-3 py-3 rounded-xl text-base font-semibold transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <div className="pt-4 space-y-2">
+              <div className="pt-4 px-3 space-y-2">
                 {user ? (
                   <>
-                    <div className="px-3 py-2 text-base font-medium text-gray-700">
+                    <div className="py-2 text-base font-bold text-nature-heading">
                       Signed in as {user.name}
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center px-3 py-2 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
+                      className="w-full flex items-center px-4 py-3 text-base font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200"
                     >
                       <LogOut className="h-5 w-5 mr-2" />
                       Sign Out
                     </button>
                   </>
                 ) : (
-                  <Link to="/login" className="w-full btn-primary flex justify-center items-center">
+                  <Link to="/login" className="w-full btn-primary flex justify-center items-center py-4">
                     <User className="h-4 w-4 mr-2" />
                     Sign In
                   </Link>

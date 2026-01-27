@@ -38,93 +38,140 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <Leaf className="h-12 w-12 text-primary-600" />
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
-            sign in to your existing account
-          </Link>
-        </p>
+    <div className="min-h-screen bg-nature-bg flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
+      {/* Background Accents */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-nature-primary/5 rounded-full blur-[120px] -ml-80 -mt-80" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-nature-accent/20 rounded-full blur-[120px] -mr-80 -mb-80" />
+
+      {/* Brand Logo */}
+      <div className="relative z-10 mb-10 text-center">
+        <Link to="/" className="inline-flex items-center gap-3">
+          <div className="bg-nature-heading p-2 rounded-xl">
+            <Leaf className="h-6 w-6 text-white" />
+          </div>
+          <span className="text-2xl font-black text-nature-heading tracking-tighter">EcoMatch</span>
+        </Link>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="sm:mx-auto sm:w-full sm:max-w-[480px] relative z-10 px-4">
+        <div className="bg-white px-10 py-12 shadow-[0_32px_64px_-16px_rgba(45,64,32,0.1)] rounded-[3rem] border border-nature-sage/10">
+          
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-black text-nature-heading mb-3 tracking-tight">
+              Create Account
+            </h2>
+            <p className="text-sm text-nature-primary font-bold opacity-60 uppercase tracking-widest">
+              Join the community of change-makers
+            </p>
+          </div>
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded relative" role="alert">
-                <span className="block sm:inline">{error}</span>
+              <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-2xl text-xs font-bold text-center" role="alert">
+                {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label className="block text-[10px] font-black text-nature-sage uppercase tracking-[0.2em] mb-2 ml-1">
                 Full Name
               </label>
-              <div className="mt-1">
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                />
-              </div>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="Jane Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="input-field"
+              />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+              <label className="block text-[10px] font-black text-nature-sage uppercase tracking-[0.2em] mb-2 ml-1">
+                Email Address
               </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                />
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="jane@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field"
+              />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+              <label className="block text-[10px] font-black text-nature-sage uppercase tracking-[0.2em] mb-2 ml-1">
+                Secure Password
               </label>
-              <div className="mt-1">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-field"
+              />
+            </div>
+
+             <div className="flex items-start bg-nature-accent/20 p-4 rounded-2xl border border-nature-sage/5">
+              <div className="flex items-center h-5">
                 <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  id="newsletter"
+                  name="newsletter"
+                  type="checkbox"
+                  className="h-4 w-4 text-nature-primary border-nature-sage/30 rounded accent-nature-primary"
                 />
+              </div>
+              <div className="ml-3">
+                <label htmlFor="newsletter" className="text-[10px] font-bold text-nature-primary leading-snug">
+                  I'd like to receive eco-tips, community updates, and impact reports via email.
+                </label>
               </div>
             </div>
 
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="w-full btn-primary py-4 text-xs font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
-                Sign up
+                Start Journey
               </button>
             </div>
+
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-nature-sage/10"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px]">
+                <span className="px-4 bg-white text-nature-sage font-black uppercase tracking-widest">or register with</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <button type="button" className="flex items-center justify-center bg-white border border-nature-sage/20 py-3 rounded-2xl hover:bg-nature-accent/20 transition-all group">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="h-5 w-5 grayscale group-hover:grayscale-0 transition-all" alt="Google" />
+              </button>
+               <button type="button" className="flex items-center justify-center bg-white border border-nature-sage/20 py-3 rounded-2xl hover:bg-nature-accent/20 transition-all group">
+                <svg className="h-5 w-5 text-nature-heading opacity-40 group-hover:opacity-100 transition-all" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.025 1c-1.096 0-2.316.634-3.195 1.634-.847.962-1.464 2.457-1.464 4.148 0 1.954 1.354 4.09 3.09 4.09 1.144 0 2.404-.707 3.253-1.742.848-1.036 1.343-2.566 1.343-4.137 0-1.99-1.39-4-3.027-4zm6.052 14.88c-1.354 2.122-2.766 4.195-4.996 4.195-1.954 0-2.585-1.353-4.835-1.353-2.28 0-2.983 1.323-4.865 1.323-2.14 0-3.696-2.23-5.016-4.48-2.618-4.468-2.103-10.998 2.768-11.23 2.073-.11 3.515 1.474 4.606 1.474 1.05 0 2.972-1.777 5.006-1.574 1.06.07 3.515.657 5.097 2.94-4.32 2.373-3.605 9.07 1.107 10.99 0 0-.696 2.01-1.867 3.71z"/>
+                </svg>
+              </button>
+            </div>
+            
+             <div className="text-center mt-10">
+               <span className="text-nature-primary text-xs font-bold opacity-60">Already have an account? </span>
+               <Link to="/login" className="text-xs font-black text-nature-heading hover:text-nature-primary underline decoration-nature-primary/30 underline-offset-4 transition-all">
+                  Sign in
+                </Link>
+             </div>
+
           </form>
         </div>
       </div>

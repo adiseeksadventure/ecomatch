@@ -6,24 +6,24 @@
 
 @layer base {
   body {
-    font-family: "Inter", system-ui, sans-serif;
+    @apply font-sans antialiased text-nature-heading bg-nature-bg;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-nature-accent hover:opacity-90 text-nature-heading font-bold py-3 px-6 rounded-full transition-all duration-200 shadow-sm border border-nature-sage/30;
   }
 
   .btn-secondary {
-    @apply bg-secondary-200 hover:bg-secondary-300 text-secondary-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply border border-nature-primary/30 hover:bg-nature-sage/10 text-nature-primary font-medium py-3 px-6 rounded-full transition-all duration-200;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-lg border border-gray-100 p-6;
+     @apply bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-nature-sage/20 p-8;
   }
 
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-4 py-3 bg-white/50 border border-nature-sage/30 rounded-xl text-nature-heading placeholder-nature-sage focus:outline-none focus:ring-2 focus:ring-nature-primary/20 focus:border-nature-primary transition-all duration-200;
   }
 }
