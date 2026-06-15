@@ -163,7 +163,7 @@ const BusinessDirectory: React.FC = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="input-field pl-12 uppercase text-xs font-black tracking-widest appearance-none"
+                className="input-field pl-12 uppercase text-xs font-black tracking-widest appearance-none bg-none"
               >
                 {categories.map((category) => (
                   <option key={category.value} value={category.value} className="bg-white text-nature-heading">
@@ -181,7 +181,7 @@ const BusinessDirectory: React.FC = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="input-field uppercase text-xs font-black tracking-widest appearance-none"
+                className="input-field uppercase text-xs font-black tracking-widest appearance-none bg-none"
               >
                 <option value="rating" className="bg-white">Sort by Rating</option>
                 <option value="name" className="bg-white">Sort by Name</option>
