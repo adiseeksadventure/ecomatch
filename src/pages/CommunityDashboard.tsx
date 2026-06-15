@@ -37,6 +37,24 @@ interface CommunityMember {
   recentActivity: string;
 }
 
+// Self-contained fallback avatar (initials on brand background) so a broken
+// remote image never renders as a browser broken-image icon.
+const initialsAvatar = (name: string) => {
+  const initials = name
+    .split(" ")
+    .map((p) => p[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">` +
+    `<rect width="96" height="96" fill="#D2E3C8"/>` +
+    `<text x="48" y="54" font-family="Inter, system-ui, sans-serif" font-size="36" ` +
+    `font-weight="700" fill="#052F1E" text-anchor="middle">${initials}</text>` +
+    `</svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+};
+
 const CommunityDashboard: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState("overview");
 
@@ -93,7 +111,7 @@ const CommunityDashboard: React.FC = () => {
       id: 1,
       name: "Sarah Green",
       avatar:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100",
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
       impact: 1250,
       level: "Eco Master",
       recentActivity: "Completed Zero Waste Week challenge",
@@ -303,6 +321,10 @@ const CommunityDashboard: React.FC = () => {
                       <img
                         src={member.avatar}
                         alt={member.name}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = initialsAvatar(member.name);
+                        }}
                         className="w-14 h-14 rounded-2xl object-cover ring-4 ring-nature-accent/30 group-hover:ring-nature-primary/30 transition-all duration-500"
                       />
                       <div className="flex-1">
@@ -419,6 +441,10 @@ const CommunityDashboard: React.FC = () => {
                      <img
                         src={member.avatar}
                         alt={member.name}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = initialsAvatar(member.name);
+                        }}
                         className="w-24 h-24 rounded-[2rem] relative z-10 object-cover ring-8 ring-nature-accent/30 group-hover:ring-nature-primary/20 transition-all duration-500"
                       />
                   </div>
