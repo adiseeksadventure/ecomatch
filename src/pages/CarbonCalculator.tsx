@@ -229,7 +229,7 @@ const CarbonCalculator: React.FC = () => {
                     <select
                         value={activityName}
                         onChange={(e) => setActivityName(e.target.value)}
-                        className="input-field pl-5 pr-12 appearance-none"
+                        className="input-field pl-5 pr-12 appearance-none bg-none"
                     >
                         <option value="" className="bg-white">Select activity...</option>
                         {currentCategory?.activities.map((activity) => (
@@ -251,8 +251,10 @@ const CarbonCalculator: React.FC = () => {
                   </label>
                   <input
                     type="number"
+                    min="0"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
+                    onWheel={(e) => e.currentTarget.blur()}
                     placeholder="0.00"
                     className="input-field pl-5"
                   />
