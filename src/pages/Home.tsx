@@ -1,15 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  Leaf,
-  Users,
-  Calculator,
-  MapPin,
-  Award,
-  TrendingUp,
-  ArrowRight,
-  CheckCircle,
-} from "lucide-react";
+import { Users, Calculator, MapPin, ArrowRight } from "lucide-react";
 
 
 const Home: React.FC = () => {

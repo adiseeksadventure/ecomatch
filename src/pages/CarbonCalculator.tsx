@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
 import {
   Calculator,
   Leaf,
-  TrendingUp,
   TrendingDown,
   Car,
-  Plane,
-  Train,
-  Bus,
-  Home,
   ShoppingBag,
   Utensils,
   Zap,
@@ -19,7 +13,7 @@ import {
 } from "lucide-react";
 
 interface CarbonEntry {
-  id: number;
+  id: string;
   category: string;
   activity: string;
   amount: number;
@@ -28,51 +22,34 @@ interface CarbonEntry {
   date: string;
 }
 
-// Helper to format date
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toISOString().split('T')[0];
+const STORAGE_KEY = "ecomatch_carbon_entries";
+
+const loadEntries = (): CarbonEntry[] => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as CarbonEntry[]) : [];
+  } catch {
+    return [];
+  }
 };
+
+const today = () => new Date().toISOString().split("T")[0];
+
+const makeId = (): string =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 const CarbonCalculator: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("transport");
+  const [activityName, setActivityName] = useState("");
   const [amount, setAmount] = useState("");
-  const [unit, setUnit] = useState("");
-  const [entries, setEntries] = useState<CarbonEntry[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const { user } = useAuth();
+  const [entries, setEntries] = useState<CarbonEntry[]>(loadEntries);
 
+  // Persist entries locally so the calculator works without an account.
   useEffect(() => {
-    const fetchEntries = async () => {
-      if (!user) return;
-      try {
-        const response = await fetch('http://localhost:5000/api/carbon', {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          // Map backend data to frontend interface if needed, or ensure they match
-          // Backend: _id, user, category, activityName, amount, unit, carbonFootprint, date
-          // Frontend: id, category, activity (mapped to activityName), amount, unit, carbonFootprint, date
-          const mappedData = data.map((item: any) => ({
-            id: item._id,
-            category: item.category,
-            activity: item.activityName,
-            amount: item.amount,
-            unit: item.unit,
-            carbonFootprint: item.carbonFootprint,
-            date: formatDate(item.date),
-          }));
-          setEntries(mappedData);
-        }
-      } catch (error) {
-        console.error('Failed to fetch entries', error);
-      }
-    };
-
-    fetchEntries();
-  }, [user]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }, [entries]);
 
   const categories = [
     {
@@ -128,81 +105,46 @@ const CarbonCalculator: React.FC = () => {
   const currentCategory = categories.find(
     (cat) => cat.value === selectedCategory
   );
+  const selectedActivity = currentCategory?.activities.find(
+    (a) => a.name === activityName
+  );
+  const unit = selectedActivity?.unit ?? "";
 
   const calculateCarbonFootprint = (amount: number, factor: number): number => {
     return Math.round(amount * factor * 100) / 100;
   };
 
-  const handleAddEntry = async () => {
-    if (!amount || !unit) return;
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    setActivityName("");
+    setAmount("");
+  };
 
-    const activity = currentCategory?.activities.find((a) => a.unit === unit);
-    if (!activity) return;
+  const handleAddEntry = () => {
+    if (!amount || !selectedActivity) return;
 
     const carbonFootprint = calculateCarbonFootprint(
       parseFloat(amount),
-      activity.factor
+      selectedActivity.factor
     );
 
-    if (!user) {
-      alert("Please sign in to save your activity");
-      return;
-    }
+    const newEntry: CarbonEntry = {
+      id: makeId(),
+      category: selectedCategory,
+      activity: selectedActivity.name,
+      amount: parseFloat(amount),
+      unit: selectedActivity.unit,
+      carbonFootprint,
+      date: today(),
+    };
 
-    try {
-      const response = await fetch('http://localhost:5000/api/carbon', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify({
-          category: selectedCategory,
-          activityName: activity.name,
-          amount: parseFloat(amount),
-          unit: unit,
-          carbonFootprint: carbonFootprint,
-        }),
-      });
-
-      if (response.ok) {
-        const savedEntry = await response.json();
-        const newEntry: CarbonEntry = {
-          id: savedEntry._id,
-          category: savedEntry.category,
-          activity: savedEntry.activityName,
-          amount: savedEntry.amount,
-          unit: savedEntry.unit,
-          carbonFootprint: savedEntry.carbonFootprint,
-          date: formatDate(savedEntry.date),
-        };
-        setEntries((prev) => [newEntry, ...prev]);
-        setAmount("");
-        setUnit("");
-        setShowForm(false);
-      }
-    } catch (error) {
-      console.error('Failed to save entry', error);
-    }
+    setEntries((prev) => [newEntry, ...prev]);
+    setAmount("");
+    setActivityName("");
   };
 
-  const handleDeleteEntry = async (id: any) => {
-    if (!user) return;
-    
-    try {
-      const response = await fetch(`http://localhost:5000/api/carbon/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-
-      if (response.ok) {
-        setEntries((prev) => prev.filter((entry) => entry.id !== id));
-      }
-    } catch (error) {
-      console.error('Failed to delete entry', error);
-    }
+  const handleDeleteEntry = (id: string) => {
+    setEntries((prev) => prev.filter((entry) => entry.id !== id));
   };
 
   const totalCarbonFootprint = entries.reduce(
@@ -258,7 +200,7 @@ const CarbonCalculator: React.FC = () => {
                     {categories.map((category) => (
                       <button
                         key={category.value}
-                        onClick={() => setSelectedCategory(category.value)}
+                        onClick={() => handleCategoryChange(category.value)}
                         className={`p-4 rounded-xl border-2 transition-all duration-300 text-left relative group ${
                           selectedCategory === category.value
                             ? "border-nature-primary bg-white shadow-lg"
@@ -285,13 +227,13 @@ const CarbonCalculator: React.FC = () => {
                   </label>
                   <div className="relative">
                     <select
-                        value={unit}
-                        onChange={(e) => setUnit(e.target.value)}
+                        value={activityName}
+                        onChange={(e) => setActivityName(e.target.value)}
                         className="input-field pl-5 pr-12 appearance-none"
                     >
                         <option value="" className="bg-white">Select activity...</option>
-                        {currentCategory?.activities.map((activity, index) => (
-                        <option key={index} value={activity.unit} className="bg-white">
+                        {currentCategory?.activities.map((activity) => (
+                        <option key={activity.name} value={activity.name} className="bg-white">
                             {activity.name}
                         </option>
                         ))}
@@ -319,9 +261,9 @@ const CarbonCalculator: React.FC = () => {
                 {/* Calculate Button */}
                 <button
                   onClick={handleAddEntry}
-                  disabled={!amount || !unit}
+                  disabled={!amount || !activityName}
                   className={`w-full py-5 px-6 rounded-full font-black text-xs uppercase tracking-widest transition-all duration-500 shadow-xl ${
-                    amount && unit
+                    amount && activityName
                       ? "btn-primary hover:scale-[1.02]"
                       : "bg-gray-100 text-gray-300 cursor-not-allowed border border-gray-200 grayscale"
                   }`}
@@ -376,10 +318,15 @@ const CarbonCalculator: React.FC = () => {
 
             {/* Activity History */}
             <div className="card shadow-2xl shadow-nature-sage/10 rounded-[2.5rem] p-10 border-nature-sage/20">
-              <h3 className="text-2xl font-black text-nature-heading mb-10 flex items-center gap-3">
-                <BarChart3 className="h-6 w-6 text-nature-primary" />
-                Impact History
-              </h3>
+              <div className="mb-10">
+                <h3 className="text-2xl font-black text-nature-heading flex items-center gap-3">
+                  <BarChart3 className="h-6 w-6 text-nature-primary" />
+                  Impact History
+                </h3>
+                <p className="text-[10px] text-nature-sage font-black uppercase tracking-[0.2em] mt-2 ml-9">
+                  Saved on this device
+                </p>
+              </div>
 
               {entries.length === 0 ? (
                 <div className="text-center py-20 bg-nature-accent/20 rounded-[2rem] border-2 border-dashed border-nature-sage/10">

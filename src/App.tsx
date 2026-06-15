@@ -9,7 +9,8 @@ import CommunityDashboard from "./pages/CommunityDashboard";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import ResumeAnalyzer from "./pages/ResumeAnalyzer";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -27,7 +28,8 @@ function App() {
             <Route path="/dashboard" element={<CommunityDashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/resulyze" element={<ResumeAnalyzer />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
           </Routes>
         </main>
         <Footer />

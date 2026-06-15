@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -28,11 +28,26 @@ interface QuizResult {
   businesses: string[];
 }
 
+const RESULT_KEY = "ecomatch_quiz_result";
+
 const SustainabilityQuiz: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<QuizResult | null>(null);
+
+  // Restore the last completed result so a returning visitor sees their profile.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RESULT_KEY);
+      if (raw) {
+        setResults(JSON.parse(raw) as QuizResult);
+        setShowResults(true);
+      }
+    } catch {
+      // ignore corrupted storage
+    }
+  }, []);
 
   const questions: Question[] = [
     {
@@ -182,7 +197,6 @@ const SustainabilityQuiz: React.FC = () => {
       (v) => v === "local" || v === "community"
     ).length;
     const healthScore = answerValues.filter((v) => v === "health").length;
-    const costScore = answerValues.filter((v) => v === "cost").length;
 
     if (environmentalScore >= 2) {
       return {
@@ -266,6 +280,11 @@ const SustainabilityQuiz: React.FC = () => {
       const results = calculateResults();
       setResults(results);
       setShowResults(true);
+      try {
+        localStorage.setItem(RESULT_KEY, JSON.stringify(results));
+      } catch {
+        // ignore storage write failures
+      }
     }
   };
 
@@ -280,6 +299,11 @@ const SustainabilityQuiz: React.FC = () => {
     setAnswers({});
     setShowResults(false);
     setResults(null);
+    try {
+      localStorage.removeItem(RESULT_KEY);
+    } catch {
+      // ignore storage failures
+    }
   };
 
   if (showResults && results) {

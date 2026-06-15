@@ -7,91 +7,91 @@ import {
   Leaf,
   Phone,
   Globe,
-  Clock,
-  Award,
   Users,
   ShoppingBag,
   Home,
 } from "lucide-react";
+import { API_BASE_URL } from "../api/config";
+import { sampleVendors, Vendor } from "../data/sampleVendors";
 
-interface Business {
-  id: number;
-  name: string;
-  category: string;
-  description: string;
-  address: string;
-  rating: number;
-  reviews: number;
-  certifications: string[];
-  distance: string;
-  image: string;
-  phone: string;
-  website: string;
-  hours?: string;
-}
+// UI filter value -> category label used by both the API and sample data.
+const CATEGORY_LABELS: Record<string, string> = {
+  food: "Food & Dining",
+  fashion: "Fashion & Beauty",
+  home: "Home & Garden",
+  services: "Services & Utilities",
+};
 
 const BusinessDirectory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("rating");
-  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [businesses, setBusinesses] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        let url = 'http://localhost:5000/api/vendors';
-        const params = new URLSearchParams();
-        
-        if (selectedCategory !== 'all') {
-          params.append('category', selectedCategory === 'food' ? 'Food & Dining' : 
-                                  selectedCategory === 'fashion' ? 'Fashion & Beauty' :
-                                  selectedCategory === 'home' ? 'Home & Garden' :
-                                  selectedCategory === 'services' ? 'Services & Utilities' : 'Other');
-        }
-        
-        if (searchTerm) {
-          params.append('search', searchTerm);
-        }
+    let cancelled = false;
 
-        if (params.toString()) {
-          url += `?${params.toString()}`;
+    // Filter the bundled sample data the same way the API would.
+    const filterSample = (): Vendor[] => {
+      const label = CATEGORY_LABELS[selectedCategory];
+      const term = searchTerm.trim().toLowerCase();
+      return sampleVendors.filter((v) => {
+        const matchesCategory =
+          selectedCategory === "all" || v.category === label;
+        const matchesSearch = !term || v.name.toLowerCase().includes(term);
+        return matchesCategory && matchesSearch;
+      });
+    };
+
+    const fetchVendors = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (selectedCategory !== "all") {
+          params.append(
+            "category",
+            CATEGORY_LABELS[selectedCategory] ?? "Other"
+          );
         }
+        if (searchTerm) params.append("search", searchTerm);
+
+        const query = params.toString();
+        const url = `${API_BASE_URL}/api/vendors${query ? `?${query}` : ""}`;
 
         const response = await fetch(url);
+        if (!response.ok) throw new Error("Request failed");
         const data = await response.json();
-        
-        // Map backend data to frontend interface
-        const mappedData = data.map((item: any) => ({
-          id: item._id,
+
+        const mapped: Vendor[] = (data as any[]).map((item) => ({
+          id: item._id ?? item.id,
           name: item.name,
           category: item.category,
           description: item.description,
-          address: item.location,
-          rating: item.rating,
-          reviews: 0, // Backend doesn't have reviews yet
-          certifications: [], // Backend doesn't have certifications yet
-          distance: "N/A", // Backend doesn't have geo-location yet
+          location: item.location,
+          rating: item.rating ?? 0,
+          certifications: item.certifications ?? [],
           image: item.image,
-          phone: item.contact?.phone || "N/A",
-          website: item.contact?.website || "N/A",
-          hours: "9AM - 5PM" // Default
+          phone: item.contact?.phone,
+          website: item.contact?.website,
         }));
-        
-        setBusinesses(mappedData);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching vendors:', error);
-        setLoading(false);
+
+        // Backend reachable but empty (not seeded) -> use bundled samples.
+        if (!cancelled) setBusinesses(mapped.length ? mapped : filterSample());
+      } catch {
+        // Backend unreachable -> the directory still works with bundled data.
+        if (!cancelled) setBusinesses(filterSample());
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
 
-    // Debounce search
-    const timeoutId = setTimeout(() => {
-      fetchVendors();
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
+    // Debounce search/filter changes.
+    const timeoutId = setTimeout(fetchVendors, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [searchTerm, selectedCategory]);
 
   const categories = [
@@ -122,34 +122,11 @@ const BusinessDirectory: React.FC = () => {
     },
   ];
 
-  // Removed hardcoded businesses
-
-  // Filtering is now done on backend, client-side sorting only
+  // Filtering is handled at fetch time; sorting is client-side.
   const sortedBusinesses = [...businesses].sort((a, b) => {
-    switch (sortBy) {
-      case "rating":
-        return b.rating - a.rating;
-      case "reviews":
-        return b.reviews - a.reviews;
-      default:
-        return 0;
-    }
+    if (sortBy === "name") return a.name.localeCompare(b.name);
+    return b.rating - a.rating; // default: rating
   });
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < Math.floor(rating)
-            ? "text-yellow-400 fill-current"
-            : i < rating
-            ? "text-yellow-400"
-            : "text-gray-300"
-        }`}
-      />
-    ));
-  };
 
   return (
     <div className="min-h-screen bg-nature-bg py-16">
@@ -160,7 +137,7 @@ const BusinessDirectory: React.FC = () => {
             Sustainable Directory
           </h1>
           <p className="text-xl text-nature-primary max-w-2xl mx-auto font-medium opacity-80">
-            Discover verified eco-conscious businesses. All partners are certified 
+            Discover verified eco-conscious businesses. All partners are certified
             sustainable and support local regenerative growth.
           </p>
         </div>
@@ -207,7 +184,7 @@ const BusinessDirectory: React.FC = () => {
                 className="input-field uppercase text-xs font-black tracking-widest appearance-none"
               >
                 <option value="rating" className="bg-white">Sort by Rating</option>
-                <option value="reviews" className="bg-white">Sort by Reviews</option>
+                <option value="name" className="bg-white">Sort by Name</option>
               </select>
                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
                   <svg className="w-4 h-4 text-nature-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -244,9 +221,6 @@ const BusinessDirectory: React.FC = () => {
                   alt={business.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className="absolute top-6 right-6 z-20 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-nature-sage/10">
-                  {business.distance}
-                </div>
                 <div className="absolute bottom-6 left-6 z-20">
                    <span className="bg-nature-accent text-nature-heading px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">
                      {business.category}
@@ -272,7 +246,7 @@ const BusinessDirectory: React.FC = () => {
 
                 <div className="flex items-center space-x-3 text-sm text-nature-primary font-semibold">
                   <MapPin className="h-5 w-5 text-nature-sage opacity-60" />
-                  <span className="truncate">{business.address}</span>
+                  <span className="truncate">{business.location}</span>
                 </div>
 
                 {/* Certifications */}
@@ -287,21 +261,27 @@ const BusinessDirectory: React.FC = () => {
                     </span>
                   ))}
                    {business.certifications.length === 0 && (
-                      <span className="text-[10px] text-nature-sage font-bold italic opacity-60 uppercase">No certifications yet</span>
+                      <span className="text-[10px] text-nature-sage font-bold italic opacity-60 uppercase">No certifications listed</span>
                    )}
                 </div>
 
                 {/* Contact Info */}
-                <div className="pt-6 border-t border-nature-sage/10 grid grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-2 text-xs text-nature-primary font-bold">
-                      <Phone className="h-4 w-4 opacity-50" />
-                      <span className="truncate">{business.phone}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-xs text-nature-primary font-bold">
-                      <Clock className="h-4 w-4 opacity-50" />
-                      <span>{business.hours}</span>
-                    </div>
-                </div>
+                {(business.phone || business.website) && (
+                  <div className="pt-6 border-t border-nature-sage/10 grid grid-cols-2 gap-4">
+                    {business.phone && (
+                      <div className="flex items-center space-x-2 text-xs text-nature-primary font-bold">
+                        <Phone className="h-4 w-4 opacity-50" />
+                        <span className="truncate">{business.phone}</span>
+                      </div>
+                    )}
+                    {business.website && (
+                      <div className="flex items-center space-x-2 text-xs text-nature-primary font-bold">
+                        <Globe className="h-4 w-4 opacity-50" />
+                        <span className="truncate">{business.website}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-4 pt-4">

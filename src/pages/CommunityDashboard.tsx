@@ -7,8 +7,6 @@ import {
   Target,
   Award,
   Star,
-  Heart,
-  MessageCircle,
   Share2,
   CheckCircle,
   Clock,
@@ -175,9 +173,15 @@ const CommunityDashboard: React.FC = () => {
             The Eco Commons
           </h1>
           <p className="text-xl text-nature-primary max-w-2xl mx-auto font-medium opacity-80">
-            Connect with a community dedicated to a regenerative future. 
+            Connect with a community dedicated to a regenerative future.
             Track shared impact and celebrate collective milestones.
           </p>
+          <div className="flex justify-center mt-6">
+            <span className="inline-flex items-center gap-2 bg-nature-accent/40 text-nature-heading px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-nature-sage/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-nature-primary" />
+              Demo data · sample community
+            </span>
+          </div>
         </div>
 
         {/* Tab Navigation */}

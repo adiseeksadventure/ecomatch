@@ -50,7 +50,12 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-2">
-            <button className="p-2 text-nature-primary hover:text-nature-heading transition-colors duration-200">
+            <button
+              onClick={() => navigate("/directory")}
+              title="Search businesses"
+              aria-label="Search businesses"
+              className="p-2 text-nature-primary hover:text-nature-heading transition-colors duration-200"
+            >
               <Search className="h-5 w-5" />
             </button>
             {user ? (
