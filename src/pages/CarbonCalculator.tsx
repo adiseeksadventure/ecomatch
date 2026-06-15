@@ -109,6 +109,8 @@ const CarbonCalculator: React.FC = () => {
     (a) => a.name === activityName
   );
   const unit = selectedActivity?.unit ?? "";
+  const amountValue = parseFloat(amount);
+  const isValidAmount = !isNaN(amountValue) && amountValue > 0;
 
   const calculateCarbonFootprint = (amount: number, factor: number): number => {
     return Math.round(amount * factor * 100) / 100;
@@ -121,10 +123,11 @@ const CarbonCalculator: React.FC = () => {
   };
 
   const handleAddEntry = () => {
-    if (!amount || !selectedActivity) return;
+    // Reject empty, zero, negative, or non-numeric quantities.
+    if (!selectedActivity || !isValidAmount) return;
 
     const carbonFootprint = calculateCarbonFootprint(
-      parseFloat(amount),
+      amountValue,
       selectedActivity.factor
     );
 
@@ -132,7 +135,7 @@ const CarbonCalculator: React.FC = () => {
       id: makeId(),
       category: selectedCategory,
       activity: selectedActivity.name,
-      amount: parseFloat(amount),
+      amount: amountValue,
       unit: selectedActivity.unit,
       carbonFootprint,
       date: today(),
@@ -252,20 +255,26 @@ const CarbonCalculator: React.FC = () => {
                   <input
                     type="number"
                     min="0"
+                    step="any"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     onWheel={(e) => e.currentTarget.blur()}
                     placeholder="0.00"
                     className="input-field pl-5"
                   />
+                  {amount !== "" && !isValidAmount && (
+                    <p className="mt-3 text-[10px] font-black text-red-500 uppercase tracking-[0.15em]">
+                      Enter a quantity greater than zero
+                    </p>
+                  )}
                 </div>
 
                 {/* Calculate Button */}
                 <button
                   onClick={handleAddEntry}
-                  disabled={!amount || !activityName}
+                  disabled={!isValidAmount || !activityName}
                   className={`w-full py-5 px-6 rounded-full font-black text-xs uppercase tracking-widest transition-all duration-500 shadow-xl ${
-                    amount && activityName
+                    isValidAmount && activityName
                       ? "btn-primary hover:scale-[1.02]"
                       : "bg-gray-100 text-gray-300 cursor-not-allowed border border-gray-200 grayscale"
                   }`}
