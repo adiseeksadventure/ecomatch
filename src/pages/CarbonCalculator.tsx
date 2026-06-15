@@ -33,7 +33,18 @@ const loadEntries = (): CarbonEntry[] => {
   }
 };
 
-const today = () => new Date().toISOString().split("T")[0];
+// Human-readable date + time in India Standard Time (Asia/Kolkata),
+// independent of the viewer's local timezone.
+const timestampIST = () =>
+  new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date()) + " IST";
 
 const makeId = (): string =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -138,7 +149,7 @@ const CarbonCalculator: React.FC = () => {
       amount: amountValue,
       unit: selectedActivity.unit,
       carbonFootprint,
-      date: today(),
+      date: timestampIST(),
     };
 
     setEntries((prev) => [newEntry, ...prev]);
